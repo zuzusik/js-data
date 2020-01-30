@@ -142,3 +142,21 @@ describe('utils.noDupeAdd', function () {
     assert.lengthOf(colors, 4, 'added blue to array')
   })
 })
+
+describe('utils.getDefaultLocale', function () {
+  it('should be a static method', function () {
+    assert.equal(typeof utils.getDefaultLocale, 'function', 'has the getDefaultLocale method')
+  })
+  it('If edge default locale should be "en"', function () {
+    global.navigator = {
+      userAgent: 'Edge'
+    }
+    assert.objectsEqual(utils.getDefaultLocale(), 'en')
+  })
+  it('If not edge default locale should be "undefined"', function () {
+    global.navigator = {
+      userAgent: 'Chrome'
+    }
+    assert.equal(undefined, utils.getDefaultLocale())
+  })
+})

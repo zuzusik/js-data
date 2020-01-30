@@ -242,8 +242,12 @@ export default Component.extend({
    * 1 if `a` should preceed `b`.
    * @since 3.0.0
    */
-  compare (orderBy, index, a, b) {
+  compare (orderBy, index, a, b, locale) {
     const def = orderBy[index]
+    /* if property is function, compare by calling the function, since its a custom compare? */
+    if (utils.isFunction(def[0])) {
+      return def[0](a, b, index, def[1], locale)
+    }
     let cA = utils.get(a, def[0])
     let cB = utils.get(b, def[0])
     if (cA && utils.isString(cA)) {
@@ -263,13 +267,21 @@ export default Component.extend({
       cB = cA
       cA = temp
     }
-    if (cA < cB) {
-      return -1
-    } else if (cA > cB) {
-      return 1
+    /* Fix: compare by using collator */
+    let isNumeric = false
+    if (utils.isNumber(cA) || utils.isNumber(cB)) {
+      isNumeric = true
+    }
+    const collator = new Intl.Collator(locale, {
+      sensitivity: 'accent',
+      numeric: isNumeric
+    })
+    var n = collator.compare(cA, cB)
+    if (n === -1 || n === 1) {
+      return n
     } else {
       if (index < orderBy.length - 1) {
-        return this.compare(orderBy, index + 1, a, b)
+        return this.compare(orderBy, index + 1, a, b, locale)
       } else {
         return 0
       }
@@ -437,6 +449,7 @@ export default Component.extend({
      * @property {number} [skip] Alias for {@link query.offset}.
      * @property {string|Array[]} [sort] Alias for {@link query.orderBy}.
      * @property {Object} [where] See {@link query.where}.
+     * @property {String} [locale] See {@link query.locale}.
      * @since 3.0.0
      * @tutorial ["http://www.js-data.io/v3.0/docs/query-syntax","JSData's Query Syntax"]
      */
@@ -548,7 +561,11 @@ export default Component.extend({
             orderBy[i] = [def, 'ASC']
           }
         })
-        this.data.sort((a, b) => this.compare(orderBy, index, a, b))
+        // if microsoft edge, force set locale, otherwise other browser seems to work fine /Wick
+        if (!utils.isString(query.locale)) {
+          query.locale = utils.getDefaultLocale()
+        }
+        this.data.sort((a, b) => this.compare(orderBy, index, a, b, query.locale))
       }
 
       /**

@@ -14,6 +14,8 @@
 }(this, (function (exports) { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -1738,6 +1740,26 @@
       }
 
       object[last] = undefined;
+    },
+
+    /**
+     * Check if in the browser and is Microsoft Edge
+     *
+     * @example
+     * import { utils } from 'js-data';
+     *
+     *
+     * utils.isEdge();
+     *
+     * @method utils.isEdge
+     * @since 3.0.0
+     */
+    getDefaultLocale: function getDefaultLocale() {
+      if (typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Edge') > -1) {
+        return 'en';
+      }
+
+      return undefined;
     }
   };
   var safeSetProp = function safeSetProp(record, field, value) {
@@ -2373,8 +2395,14 @@
      * 1 if `a` should preceed `b`.
      * @since 3.0.0
      */
-    compare: function compare(orderBy, index, a, b) {
+    compare: function compare(orderBy, index, a, b, locale) {
       var def = orderBy[index];
+      /* if property is function, compare by calling the function, since its a custom compare? */
+
+      if (utils.isFunction(def[0])) {
+        return def[0](a, b, index, def[1], locale);
+      }
+
       var cA = utils.get(a, def[0]);
       var cB = utils.get(b, def[0]);
 
@@ -2399,14 +2427,26 @@
         cB = cA;
         cA = temp;
       }
+      /* Fix: compare by using collator */
 
-      if (cA < cB) {
-        return -1;
-      } else if (cA > cB) {
-        return 1;
+
+      var isNumeric = false;
+
+      if (utils.isNumber(cA) || utils.isNumber(cB)) {
+        isNumeric = true;
+      }
+
+      var collator = new Intl.Collator(locale, {
+        sensitivity: 'accent',
+        numeric: isNumeric
+      });
+      var n = collator.compare(cA, cB);
+
+      if (n === -1 || n === 1) {
+        return n;
       } else {
         if (index < orderBy.length - 1) {
-          return this.compare(orderBy, index + 1, a, b);
+          return this.compare(orderBy, index + 1, a, b, locale);
         } else {
           return 0;
         }
@@ -2578,6 +2618,7 @@
        * @property {number} [skip] Alias for {@link query.offset}.
        * @property {string|Array[]} [sort] Alias for {@link query.orderBy}.
        * @property {Object} [where] See {@link query.where}.
+       * @property {String} [locale] See {@link query.locale}.
        * @since 3.0.0
        * @tutorial ["http://www.js-data.io/v3.0/docs/query-syntax","JSData's Query Syntax"]
        */
@@ -2691,9 +2732,14 @@
             if (utils.isString(def)) {
               orderBy[i] = [def, 'ASC'];
             }
-          });
+          }); // if microsoft edge, force set locale, otherwise other browser seems to work fine /Wick
+
+          if (!utils.isString(query.locale)) {
+            query.locale = utils.getDefaultLocale();
+          }
+
           this.data.sort(function (a, b) {
-            return _this2.compare(orderBy, index, a, b);
+            return _this2.compare(orderBy, index, a, b, query.locale);
           });
         }
         /**

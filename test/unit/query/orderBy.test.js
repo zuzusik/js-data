@@ -1,6 +1,8 @@
 import { assert, JSData } from '../../_setup'
 
 describe('Query#orderBy', function () {
+
+ 
   it('should work', function () {
     const collection = this.PostCollection
     const p1 = this.data.p1
@@ -99,6 +101,40 @@ describe('Query#orderBy', function () {
       items[0],
       items[9],
       items[3]
+    ])
+  })
+  it('should work with sorting thai locality', function () {
+    const store = new JSData.DataStore()
+    store.defineMapper('item')
+    const items = [
+      { test: 'คลอน' },
+      { test: 'กลอน' },
+      { test: 'สาระ' },
+      { test: 'ศาลา' },
+      { test: 'จักรพรรณ' },
+      { test: 'จักรพรรดิ' },
+      { test: 'เก๋ง' },
+      { test: 'เก้ง' },
+      { test: 'เก็ง' },
+      { test: 'เก่ง' }
+    ]
+    store.add('item', items)
+    const params = {}
+
+    params.orderBy = [
+      ['test', 'ASC']
+    ]
+    assert.objectsEqual(store.query('item').filter(params).run(), [
+      items[1],
+      items[8],
+      items[9],
+      items[7],
+      items[6],
+      items[0],
+      items[4],
+      items[5],
+      items[3],
+      items[2]
     ])
   })
   it('should order by nested keys', function () {

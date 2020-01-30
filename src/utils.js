@@ -1647,6 +1647,25 @@ http://www.js-data.io/v3.0/docs/errors#${code}`
     }
 
     object[last] = undefined
+  },
+
+  /**
+   * Check if in the browser and is Microsoft Edge
+   *
+   * @example
+   * import { utils } from 'js-data';
+   *
+   *
+   * utils.isEdge();
+   *
+   * @method utils.isEdge
+   * @since 3.0.0
+   */
+  getDefaultLocale () {
+    if (typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Edge') > -1) {
+      return 'en'
+    }
+    return undefined
   }
 }
 
