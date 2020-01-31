@@ -883,6 +883,10 @@ http://www.js-data.io/v3.0/docs/errors#${code}`
     if (!prop) {
       return
     }
+    /* if prop is function, get the property by calling a function, passing an object as a parameter */
+    if (utils.isFunction(prop)) {
+      return prop(object)
+    }
     const parts = prop.split('.')
     const last = parts.pop()
 

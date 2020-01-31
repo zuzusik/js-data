@@ -947,6 +947,12 @@
       if (!prop) {
         return;
       }
+      /* if prop is function, get the property by calling a function, passing an object as a parameter */
+
+
+      if (utils.isFunction(prop)) {
+        return prop(object);
+      }
 
       var parts = prop.split('.');
       var last = parts.pop();
@@ -2397,12 +2403,6 @@
      */
     compare: function compare(orderBy, index, a, b, locale) {
       var def = orderBy[index];
-      /* if property is function, compare by calling the function, since its a custom compare? */
-
-      if (utils.isFunction(def[0])) {
-        return def[0](a, b, index, def[1], locale);
-      }
-
       var cA = utils.get(a, def[0]);
       var cB = utils.get(b, def[0]);
 

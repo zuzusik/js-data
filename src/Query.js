@@ -244,10 +244,6 @@ export default Component.extend({
    */
   compare (orderBy, index, a, b, locale) {
     const def = orderBy[index]
-    /* if property is function, compare by calling the function, since its a custom compare? */
-    if (utils.isFunction(def[0])) {
-      return def[0](a, b, index, def[1], locale)
-    }
     let cA = utils.get(a, def[0])
     let cB = utils.get(b, def[0])
     if (cA && utils.isString(cA)) {

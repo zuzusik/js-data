@@ -17,6 +17,13 @@ describe('utils.get', function () {
     assert.equal(john.friend.name, utils.get(john, 'friend.name'))
     assert.equal(undefined, utils.get(john, ''), 'null prop name returns undefined')
   })
+  it('returns a given property by callback', function () {
+    const john = { name: 'John', age: 20, friend: { name: 'Sara' } }
+    const callback = (prop) => {
+      return john[prop]
+    }
+    assert.equal(john.name, utils.get('name', callback))
+  })
 })
 
 describe('utils.findIndex', function () {
