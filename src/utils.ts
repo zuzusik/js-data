@@ -1467,6 +1467,27 @@ http://www.js-data.io/v3.0/docs/errors#${code}`
     }
 
     object[last] = undefined
+  },
+
+  /**
+   * Return whether the provided value is `null` or `undefined`.
+   *
+   * @example
+   * import { utils } from 'js-data';
+   * const a = null;
+   * const b = undefined;
+   * const c = { foo: "bar" };
+   * console.log(utils.isNil(a)); // true
+   * console.log(utils.isNil(b)); // true
+   * console.log(utils.isNil(c)); // false
+   *
+   * @method utils.isNull
+   * @param {*} value The value to test.
+   * @returns {boolean} Whether the provided value is `null` or `undefined`.
+   * @since 4.0.0
+   */
+  isNil (value): boolean {
+    return utils.isNull(value) || utils.isUndefined(value)
   }
 }
 

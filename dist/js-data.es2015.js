@@ -1427,6 +1427,26 @@ http://www.js-data.io/v3.0/docs/errors#${code}`;
             }
         }
         object[last] = undefined;
+    },
+    /**
+     * Return whether the provided value is `null` or `undefined`.
+     *
+     * @example
+     * import { utils } from 'js-data';
+     * const a = null;
+     * const b = undefined;
+     * const c = { foo: "bar" };
+     * console.log(utils.isNil(a)); // true
+     * console.log(utils.isNil(b)); // true
+     * console.log(utils.isNil(c)); // false
+     *
+     * @method utils.isNull
+     * @param {*} value The value to test.
+     * @returns {boolean} Whether the provided value is `null` or `undefined`.
+     * @since 4.0.0
+     */
+    isNil(value) {
+        return utils.isNull(value) || utils.isUndefined(value);
     }
 };
 const safeSetProp = (record, field, value) => {
@@ -1783,7 +1803,15 @@ class Query extends Component {
             cB = cA;
             cA = temp;
         }
-        if (cA < cB) {
+        if ((utils.isNil(cA) || utils.isNil(cB)) && cA !== cB) {
+            if (utils.isNil(cA) && utils.isNil(cB)) {
+                return utils.isNull(cA) ? -1 : 1;
+            }
+            else {
+                return utils.isNil(cB) ? -1 : 1;
+            }
+        }
+        else if (cA < cB) {
             return -1;
         }
         else if (cA > cB) {

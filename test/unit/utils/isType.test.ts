@@ -251,3 +251,30 @@ describe('utils.isUndefined', () => {
     })
   })
 })
+
+describe('utils.isNil', () => {
+  it('should be a static method', () => {
+    assert.equal(typeof utils.isNil, 'function', 'has the isNil method')
+  })
+
+  it('isNil returns true for undefined values', () => {
+    const trueVals = [undefined, void (() => {})]
+    trueVals.forEach(val => {
+      assert.isUndefined(val, val + ' is undefined')
+      assert.isTrue(utils.isNil(val))
+    })
+  })
+
+  it('isNil returns true for null', () => {
+    assert.isTrue(utils.isNil(null))
+  })
+
+  it('isNil returns false for non undefined and non null values', () => {
+    const falseVals = ['', {}, () => {}]
+    falseVals.forEach(val => {
+      assert.isDefined(val, val + ' is not undefined')
+      assert.isNotNull(val, val + ' is not null')
+      assert.isNotTrue(utils.isUndefined(val))
+    })
+  })
+})

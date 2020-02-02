@@ -262,7 +262,14 @@ export default class Query extends Component {
       cB = cA
       cA = temp
     }
-    if (cA < cB) {
+
+    if ((utils.isNil(cA) || utils.isNil(cB)) && cA !== cB) {
+      if (utils.isNil(cA) && utils.isNil(cB)) {
+        return utils.isNull(cA) ? -1 : 1
+      } else {
+        return utils.isNil(cB) ? -1 : 1
+      }
+    } else if (cA < cB) {
       return -1
     } else if (cA > cB) {
       return 1
