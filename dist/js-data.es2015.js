@@ -8,8 +8,6 @@
 * @overview js-data is a framework-agnostic, datastore-agnostic ORM/ODM for Node.js and the Browser.
 */
 function _typeof(obj) {
-  "@babel/helpers - typeof";
-
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
     _typeof = function (obj) {
       return typeof obj;

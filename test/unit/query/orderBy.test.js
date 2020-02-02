@@ -1,8 +1,6 @@
 import { assert, JSData } from '../../_setup'
 
 describe('Query#orderBy', function () {
-
- 
   it('should work', function () {
     const collection = this.PostCollection
     const p1 = this.data.p1
@@ -179,5 +177,74 @@ describe('Query#orderBy', function () {
       orderBy: [['foo.bar', 'DESC']]
     }
     assert.objectsEqual(store.query('thing').filter(params).run(), [things[0], things[2], things[3], things[1]], 'should order by a nested key')
+  })
+
+  it('puts null and undefined values at the end of result', () => {
+    const store = new JSData.DataStore()
+
+    store.defineMapper('nilOrderBy')
+
+    const items = [
+      {
+        id: 0,
+        count: 1
+      },
+      {
+        id: 1,
+        count: null
+      },
+      {
+        id: 2,
+        count: 0
+      },
+      {
+        id: 3,
+        count: undefined
+      },
+      {
+        id: 4,
+        count: 2
+      },
+      {
+        id: 5,
+        count: undefined
+      },
+      {
+        id: 6,
+        count: null
+      },
+      {
+        id: 7,
+        count: 10
+      }
+    ]
+
+    store.add('nilOrderBy', items)
+
+    const paramsAsc = {
+      orderBy: [['count', 'ASC']]
+    }
+
+    assert.objectsEqual(
+      store
+        .query('nilOrderBy')
+        .filter(paramsAsc)
+        .run(),
+      [items[2], items[0], items[4], items[7], items[1], items[6], items[3], items[5]],
+      'should order by a key ASC'
+    )
+
+    const paramsDesc = {
+      orderBy: [['count', 'DESC']]
+    }
+
+    assert.objectsEqual(
+      store
+        .query('nilOrderBy')
+        .filter(paramsDesc)
+        .run(),
+      [items[3], items[5], items[1], items[6], items[7], items[4], items[0], items[2]],
+      'should order by a key DESC'
+    )
   })
 })
